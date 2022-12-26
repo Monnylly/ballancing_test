@@ -4,6 +4,7 @@
  * @param {array} customers
  * @param {array} customerSuccessAway
  */
+
 function customerSuccessBalancing(
   customerSuccess,
   customers,
@@ -14,9 +15,17 @@ function customerSuccessBalancing(
   const customer_suc = customerSuccess;
   const clients = new Set(customers);
 
-  const result_cs = customer_suc
-    .filter(({ id }) => !customer_suc_away.includes(id))
-    .sort((a, b) => a.score - b.score)
+  // em clients foi armazenado todos os clientes - retirando valores repeditos do array costumers com o new set
+
+  const filter_id = customer_suc.filter(({id}) => !customer_suc_away.includes(id));
+
+  // usando filter para percorrer o array customer_suc para fazer uma verificação apartir do id se caso o id nao estiver no array de customer inativos eu inclui este id na constante filter id ou seja esssa constante armazena apenas os profissionais disponiveis para atender os clientes;
+
+  const score_order = filter_id.sort((a, b) => a.score - b.score);
+
+  // aqui é feito uma ordeção do array anterior com os profissionais disponiveis a partir do score
+
+  const count_clients = score_order
     .map((index) => {
       let count_costumer = 0;
       clients.forEach((customer) => {
@@ -30,13 +39,21 @@ function customerSuccessBalancing(
         count_costumer,
       };
     })
+
+  const result_cs = count_clients
     .sort((a, b) => b.count_costumer - a.count_costumer);
 
   const first_position = result_cs[0];
   const second_position = result_cs[1];
 
-  return first_position.count_costumer === second_position.count_costumer ? 0 : first_position.id;
+  if (first_position.count_costumer === second_position.count_costumer){
+    return 0
+  }
+   else{
+     return first_position.id;
+   }
 };
+
   /**
    * ===============================================
    * =========== Write your solution here ==========
@@ -135,4 +152,24 @@ test("Scenario 7", () => {
   const csAway = [4, 5, 6];
 
   expect(customerSuccessBalancing(css, customers, csAway)).toEqual(3);
+});
+
+test("Scenario 8", () => {
+  const css = [
+    { id: 1, score: 60 },
+    { id: 2, score: 20 },
+    { id: 3, score: 95 },
+    { id: 4, score: 75 },
+  ];
+  const customers = [
+    { id: 1, score: 90 },
+    { id: 2, score: 20 },
+    { id: 3, score: 70 },
+    { id: 4, score: 40 },
+    { id: 5, score: 60 },
+    { id: 6, score: 10 },
+  ];
+  const csAway = [1];
+
+  expect(customerSuccessBalancing(css, customers, csAway)).toEqual(4);
 });
